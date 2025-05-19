@@ -115,7 +115,9 @@ Postman을 이용한 E2E 테스트 컬렉션이 제공됩니다
 <img src="./readme/testAdminAccount.png" height="100"/>
 
 
-환경변수 파일을 가져오신 뒤, 환경변수의 adminMail, adminPassword로 계정을 추가한 뒤, users collection에서 Admin 권한을 추가해야합니다.
+환경변수 파일을 가져오신 뒤, 환경변수의 adminMail, adminPassword로 /auth/signup api를 사용하여 계정을 추가한 뒤, 
+
+users collection에서 Admin 권한을 추가해야합니다.
 
 <img src="./readme/testImg.png" height="300"/>
 
