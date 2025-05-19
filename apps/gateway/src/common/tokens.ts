@@ -1,0 +1,5 @@
+export const AUTH_HTTP = 'AUTH_HTTP';
+export const EVENT_HTTP = 'EVENT_HTTP';
+
+export const EVENT_HTTP_SERVICE = 'EVENT_HTTP_SERVICE';
+export const AUTH_HTTP_SERVICE = 'AUTH_HTTP_SERVICE';

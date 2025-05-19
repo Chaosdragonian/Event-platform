@@ -1,0 +1,43 @@
+version: "3.8"
+
+services:
+  auth:
+    build:
+      context: .
+      dockerfile: apps/auth/Dockerfile
+      args:
+        ENV_FILE: ${AUTH_ENV_FILE:-.env.docker}
+    env_file:
+      - ${AUTH_ENV_FILE:-.env.docker}
+    ports:
+      - "${AUTH_PORT:-3001}:3001"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+  gateway:
+    build:
+      context: .
+      dockerfile: apps/gateway/Dockerfile
+      args:
+        ENV_FILE: ${GATEWAY_ENV_FILE:-.env.docker}
+    env_file:
+      - ${GATEWAY_ENV_FILE:-.env.docker}
+    ports:
+      - "${GATEWAY_PORT:-3000}:3000"
+    depends_on:
+      - auth
+
+  event:
+    build:
+      context: .
+      dockerfile: apps/event-platform/Dockerfile
+      args:
+        ENV_FILE: ${EVENT_ENV_FILE:-.env.docker}
+    env_file:
+      - ${EVENT_ENV_FILE:-.env.docker}
+    ports:
+      - "${EVENT_PORT:-3002}:3002"
+    depends_on:
+      - auth
+    extra_hosts:
+      - "host.docker.internal:host-gateway"

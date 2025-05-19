@@ -1,0 +1,1054 @@
+{
+	"info": {
+		"_postman_id": "9346522a-e8e7-4714-bd97-768bab4bc6ef",
+		"name": "Nexon Maplestory Web Backend",
+		"description": "Gateway 서버를 통해 전송할 요청 테스트 컬렉션입니다.\n\nAuth 컬렉션에는 회원가입, 로그인, 권한 상승 관련 테스트 코드가 작성되어있고,\n\nEvent 컬렉션에는 이벤트 등록, 조회. 보상 등록, 조회 및 보상 요청, 보상 요청 내역 확인에 관한 테스트 코드가 작성되어있습니다.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "450298"
+	},
+	"item": [
+		{
+			"name": "시나리오 1번 관리자 이벤트 생성",
+			"item": [
+				{
+					"name": "1. login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"1.login\", function(){",
+									"    pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+									"});",
+									"pm.test(\"response body has json with form data\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.accessToken).exist;",
+									"});",
+									"const res = pm.response.json();",
+									"pm.environment.set(\"accessToken\", res.accessToken);",
+									"console.log(pm.environment.get(\"accessToken\"))",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\" : {{adminMail}},\n    \"password\": {{adminPassword}}\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{gateway}}/auth/login",
+							"host": [
+								"{{gateway}}"
+							],
+							"path": [
+								"auth",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "2. createEvent-attendance",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"2. createEvent\", function(){",
+									"    pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+									"});",
+									"pm.test(\"response body has json with form data\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    const rawEnv = pm.environment.get(\"eventTitle\")",
+									"    const expected = JSON.parse(rawEnv)",
+									"    pm.expect(jsonData.title).to.eql(",
+									"        expected",
+									"    );",
+									"});",
+									"const res = pm.response.json();",
+									"pm.environment.set(\"createdEventID\", res._id);",
+									"console.log(pm.environment.get(\"createdEventID\"))"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"title\": {{eventTitle}},\n    \"conditionType\": {{attendanceCondition}},\n    \"conditionMeta\": {\"days\": 1},\n    \"startAt\": \"2025-05-18T09:00:00.000Z\",\n    \"endAt\": \"2025-05-30T09:00:00.000Z\",\n    \"active\": \"false\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:3000/event/create",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"event",
+								"create"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "2-1. createEvent-accountage",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"2-1. createEvent\", function(){",
+									"    pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+									"});",
+									"pm.test(\"response body has json with form data\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    const rawEnv = pm.environment.get(\"accountEventTitle\")",
+									"    const expected = JSON.parse(rawEnv)",
+									"    pm.expect(jsonData.title).to.eql(",
+									"        expected",
+									"    );",
+									"});",
+									"const res = pm.response.json();",
+									"pm.environment.set(\"accountAgeEventId\", res._id);",
+									"console.log(pm.environment.get(\"accountAgeEventId\"))"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"title\": {{accountEventTitle}},\n    \"conditionType\": {{accountAgeCondition}},\n    \"conditionMeta\": {\"days\": 1},\n    \"startAt\": \"2025-05-18T09:00:00.000Z\",\n    \"endAt\": \"2025-05-30T09:00:00.000Z\",\n    \"active\": \"true\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:3000/event/create",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"event",
+								"create"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "3. createReward",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"3. createReward\", function(){",
+									"    pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+									"});",
+									"pm.test(\"response body has json with form data\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.eventId).to.eql(pm.environment.get(\"createdEventID\"));",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"eventId\": \"{{createdEventID}}\",\n    \"type\": {{meso}},\n    \"amount\": 100\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:3000/reward",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"reward"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "4. getEvent",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"4. getEvent\", function(){",
+									"    pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+									"});",
+									"pm.test(\"response body has json with form data\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData[0]).to.exist;",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"title\": {{eventTitle}},\n    \"conditionType\": {{attendanceCondition}},\n    \"conditionMeta\": {\"days\": 7},\n    \"startAt\": \"2025-05-18T09:00:00.000Z\",\n    \"endAt\": \"2025-05-30T09:00:00.000Z\",\n    \"active\": \"false\"\n}"
+						},
+						"url": {
+							"raw": "localhost:3000/event/{{createdEventID}}",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"event",
+								"{{createdEventID}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "5. createClaim",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"5. createClaim\", function(){",
+									"    pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+									"});",
+									"pm.test(\"response body has json with form data\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.eventId).to.eql(pm.environment.get(\"createdEventID\"));",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"eventId\": \"{{createdEventID}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:3000/reward/claim",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"reward",
+								"claim"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "6. getClaim",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"6. getClaim\", function(){",
+									"    pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"eventId\": \"{{createdEventID}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:3000/reward/claim",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"reward",
+								"claim"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"description": "event 생성, 조회, reward 생성, claim 생성,조회 까지의 시나리오를 테스트합니다.\n\n최초 ADMIN 등록은 database에서 직접 수정해야합니다.\n\n테스트에서는 미리 등록된 계정을 사용합니다."
+		},
+		{
+			"name": "시나리오 2번 User",
+			"item": [
+				{
+					"name": "0. signup",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\" : {{userMail}},\n    \"password\": {{userPassword}}\n}"
+						},
+						"url": {
+							"raw": "{{gateway}}/auth/signup",
+							"host": [
+								"{{gateway}}"
+							],
+							"path": [
+								"auth",
+								"signup"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "1. login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"1.login\", function(){",
+									"    pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+									"});",
+									"pm.test(\"response body has json with form data\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.accessToken).exist;",
+									"});",
+									"const res = pm.response.json();",
+									"pm.environment.set(\"accessToken\", res.accessToken);",
+									"console.log(pm.environment.get(\"accessToken\"))",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\" : {{userMail}},\n    \"password\": {{userPassword}}\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{gateway}}/auth/login",
+							"host": [
+								"{{gateway}}"
+							],
+							"path": [
+								"auth",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "2. createEvent",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"2. createEvent\", function(){",
+									"    pm.expect(pm.response.code).to.be.oneOf([400, 401,403,409]);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"title\": {{eventTitle}},\n    \"conditionType\": {{attendanceCondition}},\n    \"conditionMeta\": {\"days\": 7},\n    \"startAt\": \"2025-05-18T09:00:00.000Z\",\n    \"endAt\": \"2025-05-30T09:00:00.000Z\",\n    \"active\": \"false\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:3000/event/create",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"event",
+								"create"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "3. createReward",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"3. createReward\", function(){",
+									"    pm.expect(pm.response.code).to.be.oneOf([400, 401,403, 409]);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"eventId\": \"{{createdEventID}}\",\n    \"type\": {{meso}},\n    \"amount\": 100\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:3000/reward",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"reward"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "4. getEvent",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"4. getEvent\", function(){",
+									"    pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+									"});",
+									"pm.test(\"response body has json with form data\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData._id).to.eql(pm.environment.get(",
+									"        \"createdEventID\"",
+									"    ));",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"title\": {{eventTitle}},\n    \"conditionType\": {{attendanceCondition}},\n    \"conditionMeta\": {\"days\": 7},\n    \"startAt\": \"2025-05-18T09:00:00.000Z\",\n    \"endAt\": \"2025-05-30T09:00:00.000Z\",\n    \"active\": \"false\"\n}"
+						},
+						"url": {
+							"raw": "localhost:3000/event/{{createdEventID}}",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"event",
+								"{{createdEventID}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "5. createClaim",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"5. createClaim\", function(){",
+									"    pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+									"});",
+									"pm.test(\"response body has json with form data\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.eventId).to.eql(pm.environment.get(\"createdEventID\"));",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"eventId\": \"{{createdEventID}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:3000/reward/claim",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"reward",
+								"claim"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "6. getClaim",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"6. getClaim\", function(){",
+									"    pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"eventId\": \"{{createdEventID}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:3000/reward/claim",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"reward",
+								"claim"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"description": "event 생성, 조회, reward 생성, claim 생성,조회 까지의 시나리오를 테스트합니다.\n\nuser계정에게는 동작하지 않는 API 기능을 테스트합니다.\n\n테스트에서는 미리 등록된 계정을 사용합니다."
+		},
+		{
+			"name": "시나리오3번 관리자의 권한추가",
+			"item": [
+				{
+					"name": "1. login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"1.login\", function(){",
+									"    pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+									"});",
+									"pm.test(\"response body has json with form data\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.accessToken).exist;",
+									"});",
+									"const res = pm.response.json();",
+									"pm.environment.set(\"accessToken\", res.accessToken);",
+									"console.log(pm.environment.get(\"accessToken\"))",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\" : {{adminMail}},\n    \"password\": {{adminPassword}}\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{gateway}}/auth/login",
+							"host": [
+								"{{gateway}}"
+							],
+							"path": [
+								"auth",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "2. addrole",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"2.addrole\", function(){",
+									"",
+									"    pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+									"});",
+									"pm.test(\"2. addrole check role\",function(){",
+									"    var res = pm.response.json();",
+									"    pm.expect(res.roles).to.include(\"ADMIN\")",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": {{userMail}},\n    \"role\": \"ADMIN\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:3000/auth/role",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"auth",
+								"role"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "2-1. deleterole",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"3.deleterole\", function(){",
+									"    pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+									"});",
+									"pm.test(\"3. delete role check\",function(){",
+									"    var res = pm.response.json();",
+									"    pm.expect(res.roles).not.to.include(\"ADMIN\")",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": {{userMail}},\n    \"role\": \"ADMIN\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:3000/auth/remove-role",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"auth",
+								"remove-role"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "시나리오 4번 User 출석이벤트",
+			"item": [
+				{
+					"name": "1. login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"1.login\", function(){",
+									"    pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+									"});",
+									"pm.test(\"response body has json with form data\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.accessToken).exist;",
+									"});",
+									"const res = pm.response.json();",
+									"pm.environment.set(\"accessToken\", res.accessToken);",
+									"console.log(pm.environment.get(\"accessToken\"))",
+									"pm.environment.set(\"refreshToken\", res.refreshToken)",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\" : {{userMail}},\n    \"password\": {{userPassword}}\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{gateway}}/auth/login",
+							"host": [
+								"{{gateway}}"
+							],
+							"path": [
+								"auth",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "2. getevent",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"2. getEvent\", function(){",
+									"    pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+									"});",
+									"pm.test(\"response body has json with form data\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData._id).to.eql(pm.environment.get(",
+									"        \"accountAgeEventId\"",
+									"    ));",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{gateway}}/event/{{accountAgeEventId}}",
+							"host": [
+								"{{gateway}}"
+							],
+							"path": [
+								"event",
+								"{{accountAgeEventId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "3. attendance",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"3. attendance\", function(){",
+									"    pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{gateway}}/attendance",
+							"host": [
+								"{{gateway}}"
+							],
+							"path": [
+								"attendance"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "4. createClaim",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"4. createClaim\", function(){",
+									"    pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+									"});",
+									"pm.test(\"response body has json with form data\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.status).to.eql(\"PENDING\");",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"eventId\": \"{{accountAgeEventId}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{gateway}}/reward/claim",
+							"host": [
+								"{{gateway}}"
+							],
+							"path": [
+								"reward",
+								"claim"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "{{accessToken}}",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "gateway",
+			"value": "http://localhost:3000",
+			"type": "string"
+		},
+		{
+			"key": "userMail",
+			"value": "user@user.com",
+			"type": "string"
+		},
+		{
+			"key": "userPassword",
+			"value": "User12345!",
+			"type": "string"
+		},
+		{
+			"value": "",
+			"type": "string",
+			"disabled": true
+		},
+		{
+			"key": "accessToken",
+			"value": ""
+		}
+	]
+}

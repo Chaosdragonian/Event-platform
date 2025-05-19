@@ -1,0 +1,5 @@
+export enum EventConditionType {
+  SAMPLE = 'SAMPLE',
+  ACCOUNT_AGE = 'ACCOUNT_AGE',
+  ATTENDANCE_STREAK = 'ATTENDANCE_STREAK',
+}
